@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>996</width>
+    <height>546</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Simulasi FCS</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    color:rgb(196, 160, 0);
+    background-color: rgb(40, 40, 40);
+}
+
+QWidget {
+    color:rgb(196, 160, 0);
+    background-color: rgb(40, 40, 40);
+}
+
+QWidget::disabled {
+    color:rgb(0, 0, 0);
+    background-color: rgb(40, 40, 40);
+}
+
+QGroupBox {
+    border: 1px solid gray;
+    border-color: rgb(196, 160, 0);
+    margin-top: 29px;
+    font-size: 16px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+QLineEdit::disabled {
+    color:rgb(0, 0, 0);
+}
+
+QToolTip {
+    color:rgb(196, 160, 0);
+    background-color: rgb(40, 40, 40);
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 5px 150px;
+    color: rgb(255, 255, 0);
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                      stop:0 #616161, stop: 0.5 #505050,
+                                      stop: 0.6 #434343, stop:1 #656565);
+}
+
+QHeaderView::section {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                      stop:0 #616161, stop: 0.5 #505050,
+                                      stop: 0.6 #434343, stop:1 #656565);
+    color: yellow;
+    padding-left: 4px;
+    border: 1px solid #6c6c6c;
+}
+
+QComboBox QAbstractItemView {
+    border: 1px solid black;
+    selection-background-color: yellow;
+    selection-color: black;
+}
+QLineEdit
+{
+    border: 1px solid gray;
+}
+
+QCheckBox {
+	background-color: rgb(85, 87, 83);
+  border: 2px solid #5A5A5A;
+  spacing: 4px;
+  outline: none;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+}
+
+QCheckBox::indicator {
+  margin-left: 0px;
+  height: 16px;
+  width: 16px;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="FrameOSDSet" name="frameOsdSet">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="pushButton">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(164, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Exit</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FrameOSDSet</class>
+   <extends>QFrame</extends>
+   <header location="global">frameosdset.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
