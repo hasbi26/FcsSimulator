@@ -11,7 +11,13 @@ DialogConfig::DialogConfig(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogConfig)
 {
+
+
     ui->setupUi(this);
+
+
+
+;
 
     foreach (QextPortInfo info, QextSerialEnumerator::getPorts())
         ui->portNameCombo->addItem(info.portName);
@@ -23,7 +29,7 @@ DialogConfig::DialogConfig(QWidget *parent) :
     ui->baudRateCombo->addItem("19200");
     ui->baudRateCombo->addItem("38400");
     ui->baudRateCombo->addItem("115200");
-    ui->baudRateCombo->setCurrentIndex(5);
+    ui->baudRateCombo->setCurrentIndex(3);
 
     ui->stopBitsCombo->addItem("1");
     ui->stopBitsCombo->addItem("2");
@@ -83,7 +89,6 @@ void DialogConfig::on_buttonBoxSaveTCPConfig_accepted()
 
     QString IP = ui->TcpEdit->text();
     QString port = ui->PortEdit->text();
-
     server = new (QTcpServer);
     if(server->listen(QHostAddress(IP),port.toInt()))
     {
@@ -101,6 +106,7 @@ void DialogConfig::on_buttonBoxSaveTCPConfig_accepted()
 
 void DialogConfig::on_buttonBoxSaveConfig_accepted()
 {
+    serial.close();
     isconnected = false;
     portName = ui->portNameCombo->currentText();
     baud = ui->baudRateCombo->currentText();
@@ -136,7 +142,6 @@ void DialogConfig::on_buttonBoxSaveConfig_accepted()
 void DialogConfig::SerialWrite(QString data)
 {
         serial.write(data.toLatin1());
-
 }
 
 //=== Tcp ===//
@@ -167,6 +172,7 @@ void DialogConfig::TcpWrite(QString data)
 void DialogConfig::disconnected()
 {
     qDebug() << "disconnected...";
+    serial.close();
 }
 
 void DialogConfig::bytesWritten(qint64 bytes)
@@ -228,7 +234,7 @@ QSerialPort::FlowControl DialogConfig::str2flwCtrl(QString flwCtrl)
 
 QSerialPort::Parity DialogConfig::str2parity(QString parity)
 {
-    if (parity == "0")
+    if (parity == "0" || parity == "NONE")
         return QSerialPort::NoParity;
     else if (parity == "2")
         return QSerialPort::EvenParity;

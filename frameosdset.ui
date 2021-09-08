@@ -337,7 +337,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>0.0 S</string>
+             <string>20-30'36''S</string>
             </property>
            </widget>
           </item>
@@ -350,7 +350,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>0.0 W</string>
+             <string>20-30'36''W</string>
             </property>
            </widget>
           </item>
@@ -1119,7 +1119,7 @@
                </font>
               </property>
               <property name="text">
-               <string>mmHg</string>
+               <string>bar</string>
               </property>
              </widget>
             </item>

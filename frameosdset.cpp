@@ -7,6 +7,8 @@
 #include "iostream"
 #include <iomanip>
 #include <vector>
+#include "QSettings"
+
 
 using namespace std;
 
@@ -75,6 +77,7 @@ FrameOSDSet::FrameOSDSet(QWidget *parent) :QFrame(parent),
     dialogSettingsList.insert("waterSpeedSettings",new DialogConfig(this));
     dialogSettingsList.insert("windSettings",new DialogConfig(this));
     dialogSettingsList.insert("weatherSettings",new DialogConfig(this));
+
 }
 
 FrameOSDSet::~FrameOSDSet()
@@ -162,6 +165,36 @@ void FrameOSDSet::on_pushButtonGyroSetting_clicked()
 {
     DialogConfig *dialogGyro = dialogSettingsList.value("gyroSettings");
     dialogGyro->show();
+
+    qDebug()<<"list"<<dialogSettingsList.value("gyroSettings");
+    qDebug()<< "YYY"<< dialogSettingsList;
+
+   QSettings settings("/home/hasbi/Documents/Dev/Qt/FcsSimulator/FcsSimulator/app.ini", QSettings::IniFormat);
+
+    settings.beginGroup("GYRO");
+    const QStringList childKeys = settings.childKeys();
+    QStringList values;
+    foreach (const QString &childKey, childKeys)
+    values << settings.value(childKey).toString();
+    qDebug()<< values;
+    QString str_1 = values.at(0);
+    QString str_2 = values.at(1);
+//    ui->TcpEdit->setText(str_1);
+//    ui->PortEdit->setText(str_2);
+    qDebug()<< "PortName"<< dialogGyro->GetPortname();
+    settings.setValue("key3",dialogGyro->GetPortname());
+    settings.endGroup();
+
+
+//    settings.beginGroup("GPS");
+
+//    const QStringList childKeys = settings.childKeys();
+//    QStringList values;
+//    foreach (const QString &childKey, childKeys)
+//    values << settings.value(childKey).toString();
+//    qDebug()<< values;
+//    settings.endGroup();
+
     if (dialogGyro->exec() == QDialog::Accepted)
     {
         activeStart = true;
@@ -315,204 +348,219 @@ void FrameOSDSet::on_pushButtonGPSApply_clicked()
     //gps nmea: 2051.0000,S
 
     // ==== Float latitude ====
-    QString lat = ui->lineEditGpsLat->text();
-    valueLat = lat.split("'").at(3);
-    float derajat = lat.split("-").at(0).toFloat();
-    float menit = lat.split("'").at(0).split("-").at(1).toFloat();
-    float detik = lat.split("'").at(1).toFloat();
-    float GpsDesimal;
-    if (valueLat == "S")
+
+    if (ui->lineEditGpsLat->text() != "0.0 S")
+
     {
-        GpsDesimal = (derajat + menit/60 + detik/3600)* -1;
-        double Formating = GpsDesimal * -100;
-        latitude = QString::number(Formating,'f',4);
-        QString str= QString::number(Formating, 'f', 4);
-    }
-    else{
-        GpsDesimal = (derajat + menit/60 + detik/3600);
-        double Formating1 = GpsDesimal * 100;
-        latitude = QString::number(Formating1,'f',4);
-        QString str= QString::number(Formating1, 'f', 4);
-    }
-    qDebug()<< "latitude = "<< latitude << valueLat;
+        qDebug()<<"tetot";
+        qDebug()<< "latitude :" << ui->lineEditGpsLat->text() ;
 
-    // ==== Float longitude ====
-    QString lon = ui->lineEditGpsLong->text();
-    valueLon = lon.split("'").at(3);
-    float derajatlon = lon.split("-").at(0).toFloat();
-    float menitlon = lon.split("'").at(0).split("-").at(1).toFloat();
-    float detiklon = lon.split("'").at(1).toFloat();
-    float GpsDesimallon;
-    if (valueLon == "W")
-    {
-        GpsDesimallon = (derajatlon + menitlon/60 + detiklon/3600)* -1;
-        double Formatinglon = GpsDesimallon * -100;
-        if (QString::number(Formatinglon).length() ==  4)
+        QString lat = ui->lineEditGpsLat->text();
+        valueLat = lat.split("'").at(3);
+        float derajat = lat.split("-").at(0).toFloat();
+        float menit = lat.split("'").at(0).split("-").at(1).toFloat();
+        float detik = lat.split("'").at(1).toFloat();
+        float GpsDesimal;
+        if (valueLat == "S")
         {
-            longitude = "0"+QString::number(Formatinglon,'f',4);
+            GpsDesimal = (derajat + menit/60 + detik/3600)* -1;
+            double Formating = GpsDesimal * -100;
+            latitude = QString::number(Formating,'f',4);
+            QString str= QString::number(Formating, 'f', 4);
+        }
+        else{
+            GpsDesimal = (derajat + menit/60 + detik/3600);
+            double Formating1 = GpsDesimal * 100;
+            latitude = QString::number(Formating1,'f',4);
+            QString str= QString::number(Formating1, 'f', 4);
+        }
+        qDebug()<< "latitude = "<< latitude << valueLat;
 
-        } else if (QString::number(Formatinglon).length() ==  3)
+        // ==== Float longitude ====
+        QString lon = ui->lineEditGpsLong->text();
+        valueLon = lon.split("'").at(3);
+        float derajatlon = lon.split("-").at(0).toFloat();
+        float menitlon = lon.split("'").at(0).split("-").at(1).toFloat();
+        float detiklon = lon.split("'").at(1).toFloat();
+        float GpsDesimallon;
+        if (valueLon == "W")
         {
-            longitude = "00"+QString::number(Formatinglon,'f',4);
+            GpsDesimallon = (derajatlon + menitlon/60 + detiklon/3600)* -1;
+            double Formatinglon = GpsDesimallon * -100;
+            if (QString::number(Formatinglon).length() ==  4)
+            {
+                longitude = "0"+QString::number(Formatinglon,'f',4);
 
-        } else if (QString::number(Formatinglon).length() ==  5)
+            } else if (QString::number(Formatinglon).length() ==  3)
+            {
+                longitude = "00"+QString::number(Formatinglon,'f',4);
+
+            } else if (QString::number(Formatinglon).length() ==  5)
+            {
+                longitude = QString::number(Formatinglon,'f',4);
+            }
+
+
+    qDebug()<<"formatilon" <<QString::number(Formatinglon).length();
+
+        }
+        else{
+            GpsDesimallon = (derajatlon + menitlon/60 + detiklon/3600);
+            double Formatinglon1 = GpsDesimallon * 100;
+
+            qDebug()<< "lenght" << QString::number(Formatinglon1).length();
+
+            if (QString::number(Formatinglon1).length() ==  5)
+            {
+                longitude = ""+QString::number(Formatinglon1,'f',4);
+
+            } else if (QString::number(Formatinglon1).length() ==  4)
+            {
+                longitude = "0"+QString::number(Formatinglon1,'f',4);
+
+            } else if (QString::number(Formatinglon1).length() ==  3)
+            {
+                longitude = "00"+QString::number(Formatinglon1,'f',4);
+            }
+
+        }
+        qDebug()<< "longitude = "<< longitude << valueLon;
+
+        // ==== Float latitude Notif ====
+    //    if (ui->lineEditGpsLat->text() != )
+
+        QString lat_str_trimmed = ui->lineEditGpsLat->text();
+        lat_str_trimmed.remove(" ");
+
+        QString str = lat_str_trimmed;
+        QStringList list1 = str.split("-");
+        if(list1.size()<2)
         {
-            longitude = QString::number(Formatinglon,'f',4);
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid input value.\nValid input : -" );
+            return;
         }
 
-
-qDebug()<<"formatilon" <<QString::number(Formatinglon).length();
-
-    }
-    else{
-        GpsDesimallon = (derajatlon + menitlon/60 + detiklon/3600);
-        double Formatinglon1 = GpsDesimallon * 100;
-
-        qDebug()<< "lenght" << QString::number(Formatinglon1).length();
-
-        if (QString::number(Formatinglon1).length() ==  5)
+        QString deg1 = list1.at(0);
+        QStringList list2 = list1.at(1).split("'");
+        if(list2.size()!=4)
         {
-            longitude = "-"+QString::number(Formatinglon1,'f',4);
-
-        } else if (QString::number(Formatinglon1).length() ==  4)
-        {
-            longitude = "-0"+QString::number(Formatinglon1,'f',4);
-
-        } else if (QString::number(Formatinglon1).length() ==  3)
-        {
-            longitude = "-00"+QString::number(Formatinglon1,'f',4);
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid input value.\nValid input : '" );
+            return;
         }
 
+        QString min1 = list2.at(0);
+        QString sec1 = list2.at(1);
+        QString sign = list2.at(3);
+//            qDebug() << deg  <<min <<sec <<sign;
+        qDebug()<<"sign adalah" << sign;
+
+        bool ok;
+        float valuedeg = deg1.toFloat(&ok);
+        if (!ok)
+        {
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid degree input value.\nValid input : 00-90" );
+            return;
+        }
+
+        float valuemin = min1.toFloat(&ok)/60.0;
+        if ((!ok) || (valuemin >= 1))
+        {
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid minute input value.\nValid input : 00-59" );
+            return;
+        }
+
+        float valuesec = sec1.toFloat(&ok)/3600.0;
+        if ((!ok) || (valuesec > (1.0/60.0)))
+        {
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid second input value.\nValid input : 00-59" );
+            return;
+        }
+
+        float valueLat = valuedeg+valuemin+valuesec;
+
+        if(sign == "S")
+            valueLat *= -1.0;
+        else if((sign != "S") && (sign != "N"))
+        {
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid orientation input value.\nValid input : S/N" );
+            return;
+        }
+
+        if ((valueLat < -90) || (valueLat > 90) )
+        {
+            QMessageBox::critical(this, "Fatal Error Latitude", "Invalid input : out of range.\nValid input : 00-00'00'' - 90-00'00''");
+            return;
+        }
+
+        //    qDebug() << Q_FUNC_INFO<<valuedeg << valuemin <<valuesec <<valueLat;
+
+        // ==== Float longitude ====
+
+        QString long_str_trimmed = ui->lineEditGpsLong->text();
+        long_str_trimmed.remove(" ");
+
+        QString str1 = long_str_trimmed;
+        QStringList long_list1 = str1.split("-");
+        if(long_list1.size()<2)
+        {
+            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid input value.\nValid input : -" );
+            return;
+        }
+
+        QString degg = long_list1.at(0);
+        QStringList long_list2 = long_list1.at(1).split("'");
+        if(long_list2.size()!=4)
+        {
+            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid input value.\nValid input : '" );
+            return;
+        }
+
+        QString minn = long_list2.at(0);
+        QString secc = long_list2.at(1);
+        QString signn = long_list2.at(3);
+        //    qDebug() <<degg  <<minn <<secc <<signn;
+
+        bool ok1;
+        float valuedegg = degg.toFloat(&ok1);
+        if (!ok1)
+        {
+            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid degree input value.\nValid input : 00-180" );
+            return;
+        }
+
+        float valueminn = minn.toFloat()/60.0;
+        if ((!ok) || (valueminn >= 1))
+        {
+            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid minute input value.\nValid input : 00-59" );
+            return;
+        }
+
+        float valuesecc = secc.toFloat()/3600.0;
+        if ((!ok) || (valuesecc > (1.0/60.0)))
+        {
+            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid second input value.\nValid input : 00-59" );
+            return;
+        }
+
+        float valueLong = valuedegg+valueminn+valuesecc;
+
+//        if(signn == "W")
+//            valueLong *= -1.0;
+//        else if ((signn != "W") && (signn != "E"))
+//        {
+//            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid orientation input value.\nValid input : W/E" );
+//            return;
+//        }
+
+        if ((valueLong < -180) || (valueLong > 180) )
+        {
+            QMessageBox::critical(this, "Fatal Error Longitude", "Invalid input : out of range.\nValid input : 00-00'00'' - 180-00'00''" );
+            return;
+        }
     }
-    qDebug()<< "longitude = "<< longitude << valueLon;
-
-    // ==== Float latitude Notif ====
-    QString lat_str_trimmed = ui->lineEditGpsLat->text();
-    lat_str_trimmed.remove(" ");
-
-    QString str = lat_str_trimmed;
-    QStringList list1 = str.split("-");
-    if(list1.size()<2)
+    else
     {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid input value.\nValid input : -" );
-        return;
-    }
-
-    QString deg1 = list1.at(0);
-    QStringList list2 = list1.at(1).split("'");
-    if(list2.size()!=4)
-    {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid input value.\nValid input : '" );
-        return;
-    }
-
-    QString min1 = list2.at(0);
-    QString sec1 = list2.at(1);
-    QString sign = list2.at(3);
-    //    qDebug() << deg  <<min <<sec <<sign;
-
-    bool ok;
-    float valuedeg = deg1.toFloat(&ok);
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid degree input value.\nValid input : 00-90" );
-        return;
-    }
-
-    float valuemin = min1.toFloat(&ok)/60.0;
-    if ((!ok) || (valuemin >= 1))
-    {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid minute input value.\nValid input : 00-59" );
-        return;
-    }
-
-    float valuesec = sec1.toFloat(&ok)/3600.0;
-    if ((!ok) || (valuesec > (1.0/60.0)))
-    {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid second input value.\nValid input : 00-59" );
-        return;
-    }
-
-    float valueLat = valuedeg+valuemin+valuesec;
-
-    if(sign == "S")
-        valueLat *= -1.0;
-    else if((sign != "S") && (sign != "N"))
-    {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid orientation input value.\nValid input : S/N" );
-        return;
-    }
-
-    if ((valueLat < -90) || (valueLat > 90) )
-    {
-        QMessageBox::critical(this, "Fatal Error Latitude", "Invalid input : out of range.\nValid input : 00-00'00'' - 90-00'00''");
-        return;
-    }
-
-    //    qDebug() << Q_FUNC_INFO<<valuedeg << valuemin <<valuesec <<valueLat;
-
-    // ==== Float longitude ====
-
-    QString long_str_trimmed = ui->lineEditGpsLong->text();
-    long_str_trimmed.remove(" ");
-
-    QString str1 = long_str_trimmed;
-    QStringList long_list1 = str1.split("-");
-    if(long_list1.size()<2)
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid input value.\nValid input : -" );
-        return;
-    }
-
-    QString degg = long_list1.at(0);
-    QStringList long_list2 = long_list1.at(1).split("'");
-    if(long_list2.size()!=4)
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid input value.\nValid input : '" );
-        return;
-    }
-
-    QString minn = long_list2.at(0);
-    QString secc = long_list2.at(1);
-    QString signn = long_list2.at(3);
-    //    qDebug() <<degg  <<minn <<secc <<signn;
-
-    bool ok1;
-    float valuedegg = degg.toFloat(&ok1);
-    if (!ok1)
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid degree input value.\nValid input : 00-180" );
-        return;
-    }
-
-    float valueminn = minn.toFloat()/60.0;
-    if ((!ok) || (valueminn >= 1))
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid minute input value.\nValid input : 00-59" );
-        return;
-    }
-
-    float valuesecc = secc.toFloat()/3600.0;
-    if ((!ok) || (valuesecc > (1.0/60.0)))
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid second input value.\nValid input : 00-59" );
-        return;
-    }
-
-    float valueLong = valuedegg+valueminn+valuesecc;
-
-    if(signn == "W")
-        valueLong *= -1.0;
-    else if ((signn != "W") && (signn != "E"))
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid orientation input value.\nValid input : W/E" );
-        return;
-    }
-
-    if ((valueLong < -180) || (valueLong > 180) )
-    {
-        QMessageBox::critical(this, "Fatal Error Longitude", "Invalid input : out of range.\nValid input : 00-00'00'' - 180-00'00''" );
-        return;
+        QMessageBox::critical(this, "Fatal Error Latitude", "the field is empty" );
     }
 }
 
@@ -675,7 +723,7 @@ void FrameOSDSet::on_pushButtonWeatherApply_clicked()
         QMessageBox::critical(this, "Fatal Error Weather Pressure", "Invalid input value\nValid input range : 100 - 1000" );
         return;
     }
-    if ((pressure_float < 100) || (pressure_float > 10000) )
+    if ((pressure_float < 0.1) || (pressure_float > 100) )
     {
         QMessageBox::critical(this, "Fatal Error", "Invalid weather pressure input\nValid input range : 100 - 10000" );
         return;
@@ -704,7 +752,7 @@ void FrameOSDSet::on_pushButtonGyroStart_clicked()
     ui->pushButtonGyroApply->setEnabled(true);
     ui->pushButtonGyroSetting->setEnabled(false);
     SendtimerGyro = new QTimer( this );
-    int sendInterval = 1000; // milliseconds
+    int sendInterval = 500; // milliseconds
     SendtimerGyro->setInterval( sendInterval );
     connect(SendtimerGyro, SIGNAL(timeout()),this, SLOT(on_GyroTimer()));
     SendtimerGyro->start(sendInterval);
@@ -718,7 +766,7 @@ void FrameOSDSet::on_pushButtonGPSStart_clicked()
     ui->pushButtonGPSApply->setEnabled(true);
     ui->pushButtonGPSSetting->setEnabled(false);
     SendtimerGps = new QTimer( this );
-    int sendInterval = 1000; // milliseconds
+    int sendInterval = 500; // milliseconds
     SendtimerGps->setInterval( sendInterval );
     connect(SendtimerGps, SIGNAL(timeout()),this, SLOT(on_GpsTimer()));
     SendtimerGps->start(sendInterval);
@@ -732,7 +780,7 @@ void FrameOSDSet::on_pushButtonSpeedStart_clicked()
     ui->pushButtonSpeedApply->setEnabled(true);
     ui->pushButtonSpeedSetting->setEnabled(false);
     SendtimerSpeed = new QTimer( this );
-    int sendInterval = 1000; // milliseconds
+    int sendInterval = 500; // milliseconds
     SendtimerSpeed->setInterval( sendInterval );
     connect(SendtimerSpeed, SIGNAL(timeout()),this, SLOT(on_SpeedTimer()));
     SendtimerSpeed->start(sendInterval);
@@ -746,7 +794,7 @@ void FrameOSDSet::on_pushButtonWaterStart_clicked()
     ui->pushButtonWaterApply->setEnabled(true);
     ui->pushButtonWaterSpeedSetting->setEnabled(false);
     SendtimerWater = new QTimer( this );
-    int sendInterval = 1000; // milliseconds
+    int sendInterval = 500; // milliseconds
     SendtimerWater->setInterval( sendInterval );
     connect(SendtimerWater, SIGNAL(timeout()),this, SLOT(on_WaterTimer()));
     SendtimerWater->start(sendInterval);
@@ -760,7 +808,7 @@ void FrameOSDSet::on_pushButtonWindStart_clicked()
     ui->pushButtonWindApply->setEnabled(true);
     ui->pushButtonWindSetting->setEnabled(false);
     SendtimerWind = new QTimer( this );
-    int sendInterval = 1000; // milliseconds
+    int sendInterval = 500; // milliseconds
     SendtimerWind->setInterval( sendInterval );
     connect(SendtimerWind, SIGNAL(timeout()),this, SLOT(on_WindTimer()));
     SendtimerWind->start(sendInterval);
@@ -774,7 +822,7 @@ void FrameOSDSet::on_pushButtonWeatherStart_clicked()
     ui->pushButtonWeatherApply->setEnabled(true);
     ui->pushButtonWeatherSetting->setEnabled(false);
     SendtimerWeather = new QTimer( this );
-    int sendInterval = 1000; // milliseconds
+    int sendInterval = 500; // milliseconds
     SendtimerWeather->setInterval( sendInterval );
     connect(SendtimerWeather, SIGNAL(timeout()),this, SLOT(on_WeatherTimer()));
     SendtimerWeather->start(sendInterval);
@@ -784,10 +832,14 @@ void FrameOSDSet::on_pushButtonWeatherStart_clicked()
 void FrameOSDSet::on_pushButtonGyroStop_clicked()
 {
     activeStart = true;
-    ui->pushButtonGyroStop->setEnabled(false);
+    ui->pushButtonGyroStop->setEnabled(true);
     ui->pushButtonGyroStart->setEnabled(false);
     ui->pushButtonGyroApply->setEnabled(true);
+    ui->pushButtonGyroSetting->setEnabled(true);
     SendtimerGyro->stop();
+
+    DialogConfig *Gyro = dialogSettingsList.value("gyroSettings");
+    Gyro->disconnected();
 }
 
 void FrameOSDSet::on_pushButtonGPSStop_clicked()
@@ -796,7 +848,10 @@ void FrameOSDSet::on_pushButtonGPSStop_clicked()
     ui->pushButtonGPSStop->setEnabled(false);
     ui->pushButtonGPSStart->setEnabled(false);
     ui->pushButtonGPSApply->setEnabled(true);
+    ui->pushButtonGPSSetting->setEnabled(true);
     SendtimerGps->stop();
+    DialogConfig *Gps = dialogSettingsList.value("gpsSettings");
+    Gps->disconnected();
 }
 
 void FrameOSDSet::on_pushButtonSpeedStop_clicked()
@@ -805,7 +860,10 @@ void FrameOSDSet::on_pushButtonSpeedStop_clicked()
     ui->pushButtonSpeedStop->setEnabled(false);
     ui->pushButtonSpeedStart->setEnabled(false);
     ui->pushButtonSpeedApply->setEnabled(true);
+    ui->pushButtonSpeedSetting->setEnabled(true);
     SendtimerSpeed->stop();
+    DialogConfig *speed = dialogSettingsList.value("speedSettings");
+    speed->disconnected();
 }
 
 void FrameOSDSet::on_pushButtonWaterStop_clicked()
@@ -814,7 +872,10 @@ void FrameOSDSet::on_pushButtonWaterStop_clicked()
     ui->pushButtonWaterStop->setEnabled(false);
     ui->pushButtonWaterStart->setEnabled(false);
     ui->pushButtonWaterApply->setEnabled(true);
+    ui->pushButtonWaterSpeedSetting->setEnabled(true);
     SendtimerWater->stop();
+    DialogConfig *Water = dialogSettingsList.value("waterSpeedSettings");
+    Water->disconnected();
 }
 
 void FrameOSDSet::on_pushButtonWindStop_clicked()
@@ -823,7 +884,10 @@ void FrameOSDSet::on_pushButtonWindStop_clicked()
     ui->pushButtonWindStop->setEnabled(false);
     ui->pushButtonWindStart->setEnabled(false);
     ui->pushButtonWindApply->setEnabled(true);
+    ui->pushButtonWindSetting->setEnabled(true);
     SendtimerWind->stop();
+    DialogConfig *Wind = dialogSettingsList.value("windSettings");
+    Wind->disconnected();
 }
 
 void FrameOSDSet::on_pushButtonWeatherStop_clicked()
@@ -832,7 +896,11 @@ void FrameOSDSet::on_pushButtonWeatherStop_clicked()
     ui->pushButtonWeatherStop->setEnabled(false);
     ui->pushButtonWeatherStart->setEnabled(false);
     ui->pushButtonWeatherApply->setEnabled(true);
+    ui->pushButtonWeatherSetting->setEnabled(true);
     SendtimerWeather->stop();
+    DialogConfig *Weather = dialogSettingsList.value("weatherSettings");
+    Weather->disconnected();
+    qDebug()<<"Weather disconected";
 }
 
 //=== Timer ===//

@@ -34,39 +34,57 @@ QString Nmeagenerator::constructDataGyro(double& heading, double& pitch, double&
     QString data = QString("GPFPD,0.0,0.0,%1,%2,%3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0").arg(heading).arg(pitch).arg(roll);
     QString checksum =  getChecksumValue(data);
     return "$" + data  + "*" + checksum + "\r\n";
+
+
 }
 
 QString Nmeagenerator::constructDataGps(QString lat, QString lon, QString valuelat, QString valuelon)
 {
-    QString data = QString("GPGGA,0,%1,%2,%3,%4,0,0,0.0,0.0,M,0.0,M,0.0,0.0").arg(lat).arg(valuelat).arg(lon).arg(valuelon);
-    QString checksum =  getChecksumValue(data);
-    return "$" + data  + "*" + checksum + "\r\n";
+    QString data1 = QString("GPGGA,0,%1,%2,%3,%4,0,0,0.0,0.0,M,0.0,M,0.0,0.0").arg(lat).arg(valuelat).arg(lon).arg(valuelon);
+    QString data2 = QString("GPZDA,181813,14,10,2003,00,00").arg(lat).arg(valuelat).arg(lon).arg(valuelon);
+    QString checksum =  getChecksumValue(data1);
+    QString checksum2 =  getChecksumValue(data2);
+    return "$" + data1  + "*" + checksum + "\r\n"+
+            "$"+ data2 + "*" + checksum2 + "\r\n";
+
+
 }
 
 QString Nmeagenerator::constructDataSpeed(double sogspeed, double cogspeed)
 {
-    QString data = QString("GPVTG,0.0,T,%1,M,0.0,N,%2,K,a").arg(sogspeed).arg(cogspeed);
+    QString data = QString("GPVTG,%2,T,0.0,M,%1,N,0.0,K,a").arg(sogspeed).arg(cogspeed);
     QString checksum =  getChecksumValue(data);
     return "$" + data  + "*" + checksum + "\r\n";
 }
 
 QString Nmeagenerator::constructDataWater(double sogwater, double cogwater)
 {
-    QString data = QString("IIVHW,0.0,T,%1,M,0.0,N,%2,K").arg(sogwater).arg(cogwater);
-    QString checksum =  getChecksumValue(data);
-    return "$" + data  + "*" + checksum + "\r\n";
+    QString data1 = QString("IIVHW,%2,T,0.0,M,%1,N,0.0,K").arg(sogwater).arg(cogwater);
+    QString data2 = QString("IIVDR,%2,T,0.0,M,%1,N,0.0,K").arg(sogwater).arg(cogwater);
+    QString data3 = QString("IIDPT,%1,0.0").arg(sogwater);
+    QString checksum1 =  getChecksumValue(data1);
+    QString checksum2 = getChecksumValue(data2);
+    QString checksum3 = getChecksumValue(data3);
+
+    return "$" + data1  + "*" + checksum1 + "\r\n"+
+            "$" + data2  + "*" + checksum2 + "\r\n"+
+            "$" + data3  + "*" + checksum3 + "\r\n";
 }
 
 QString Nmeagenerator::constructDataWind(double speedwind, double dirwind)
 {
-    QString data = QString("IIMWD,0.0,T,%1,M,%2,N,0.0,M").arg(speedwind).arg(dirwind);
-    QString checksum =  getChecksumValue(data);
-    return "$" + data  + "*" + checksum + "\r\n";
+    QString data1 = QString("IIMWV,%2,T,%1,N,A").arg(speedwind).arg(dirwind);
+    QString data2 = QString("IIMWV,%2,R,%1,M,A").arg(speedwind).arg(dirwind);
+//    QString data2 = QString("IIMWV,%2,R,0.0,M,%1,N,0.0,M").arg(speedwind).arg(dirwind);
+    QString checksum1 =  getChecksumValue(data1);
+    QString checksum2 = getChecksumValue(data2);
+    return "$" + data1  + "*" + checksum1 + "\r\n"+
+           "$" + data2  + "*" + checksum2 + "\r\n";
 }
 
 QString Nmeagenerator::constructDataWeather(double tempweather, double pressweather, double humidityweather)
 {
-    QString data = QString("WIXDR,P.%1,B,0,C,%2,C,0,H,%3,P,0,C,0.0,C,1").arg(tempweather).arg(pressweather).arg(humidityweather);
+    QString data = QString("WIXDR,P,%2,B,Barometer,C,%1,C,AirTemp,H,%3,P,Humidity").arg(tempweather).arg(pressweather).arg(humidityweather);
     QString checksum =  getChecksumValue(data);
     return "$" + data  + "*" + checksum + "\r\n";
 }

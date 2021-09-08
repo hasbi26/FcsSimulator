@@ -91,12 +91,12 @@ private:
     QString valueLon;
 
     //=== Speedvalue ===//
-    double cogSpeed;
     double sogSpeed;
+    double cogSpeed;
 
     //=== Watervalue ===//
-    double cogWater;
     double sogWater;
+    double cogWater;
 
     //=== Windvalue ===//
     double speedWind;
