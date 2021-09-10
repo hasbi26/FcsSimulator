@@ -8,6 +8,8 @@
 #include <iomanip>
 #include <vector>
 #include "QSettings"
+#include <QFile>
+#include "QDir"
 
 
 using namespace std;
@@ -169,54 +171,64 @@ void FrameOSDSet::on_pushButtonGyroSetting_clicked()
     qDebug()<<"list"<<dialogSettingsList.value("gyroSettings");
     qDebug()<< "YYY"<< dialogSettingsList;
 
-   QSettings settings("/home/hasbi/Documents/Dev/Qt/FcsSimulator/FcsSimulator/app.ini", QSettings::IniFormat);
-
-    settings.beginGroup("GYRO");
-    const QStringList childKeys = settings.childKeys();
-    QStringList values;
-    foreach (const QString &childKey, childKeys)
-    values << settings.value(childKey).toString();
-    qDebug()<< values;
-    QString str_1 = values.at(0);
-    QString str_2 = values.at(1);
-//    ui->TcpEdit->setText(str_1);
-//    ui->PortEdit->setText(str_2);
-    qDebug()<< "PortName"<< dialogGyro->GetPortname();
-    settings.setValue("key3",dialogGyro->GetPortname());
-    settings.endGroup();
-
-
-//    settings.beginGroup("GPS");
-
-//    const QStringList childKeys = settings.childKeys();
-//    QStringList values;
-//    foreach (const QString &childKey, childKeys)
-//    values << settings.value(childKey).toString();
-//    qDebug()<< values;
-//    settings.endGroup();
+    QSettings settings("app.ini", QSettings::IniFormat);
+    settings.beginGroup("Gyro");
+    qDebug()<<"PortnameGyro =" << settings.value("portname");
+    dialogGyro->setSerialSettings(settings.value("portname").toString(), settings.value("baud").toString(),
+                                  settings.value("stopbits").toString(), settings.value("databits").toString(), settings.value("parity").toString(),
+                                  settings.value("tcpip").toString(), settings.value("tcpport").toString());
 
     if (dialogGyro->exec() == QDialog::Accepted)
     {
-        activeStart = true;
-        if (ui->osdGryoComboBox->currentText() == "Serial")
-            gyroState(dialogGyro->serialconnected());
 
-        else
+        qDebug()<<"PortnameGyro =" << dialogGyro->GetPortname();
+        activeStart = true;
+        if (ui->osdGryoComboBox->currentText() == "Serial"){
+            settings.setValue("portname", dialogGyro->GetPortname());
+            settings.setValue("baud", dialogGyro->GetBaud());
+            settings.setValue("stopbits", dialogGyro->GetStopBit());
+            settings.setValue("databits", dialogGyro->GetDatabit());
+            settings.setValue("parity", dialogGyro->GetParity());
+            gyroState(dialogGyro->serialconnected());
+        }
+        else{
+            settings.setValue("tcpip", dialogGyro->GetTcp());
+            settings.setValue("tcpport", dialogGyro->GetPort());
             gyroState(dialogGyro->tcpconnected());
+        }
     }
+    settings.endGroup();
+
 }
 
 void FrameOSDSet::on_pushButtonGPSSetting_clicked()
 {
     DialogConfig *dialogGps = dialogSettingsList.value("gpsSettings");
     dialogGps->show();
+
+    QSettings settings("app.ini", QSettings::IniFormat);
+    settings.beginGroup("Gps");
+    dialogGps->setSerialSettings(settings.value("portname").toString(), settings.value("baud").toString(),
+                                 settings.value("stopbits").toString(), settings.value("databits").toString(), settings.value("parity").toString(),
+                                 settings.value("tcpip").toString(), settings.value("tcpport").toString());
+
+
     if (dialogGps->exec() == QDialog::Accepted)
     {
-        activeStart = true;
-        if (ui->comboBoxGPSMode->currentText() == "Serial")
+          activeStart = true;
+        if (ui->comboBoxGPSMode->currentText() == "Serial"){
+            settings.setValue("portname", dialogGps->GetPortname());
+            settings.setValue("baud", dialogGps->GetBaud());
+            settings.setValue("stopbits", dialogGps->GetStopBit());
+            settings.setValue("databits", dialogGps->GetDatabit());
+            settings.setValue("parity", dialogGps->GetParity());
             gpsState(dialogGps->serialconnected());
-        else
+        }
+        else{
+            settings.setValue("tcpip", dialogGps->GetTcp());
+            settings.setValue("tcpport", dialogGps->GetPort());
             gpsState(dialogGps->tcpconnected());
+            }
     }
 }
 
@@ -224,13 +236,31 @@ void FrameOSDSet::on_pushButtonSpeedSetting_clicked()
 {
     DialogConfig *dialogSpeed = dialogSettingsList.value("speedSettings");
     dialogSpeed->show();
+
+
+    QSettings settings("app.ini", QSettings::IniFormat);
+    settings.beginGroup("Speed");
+    dialogSpeed->setSerialSettings(settings.value("portname").toString(), settings.value("baud").toString(),
+                                   settings.value("stopbits").toString(), settings.value("databits").toString(), settings.value("parity").toString(),
+                                   settings.value("tcpip").toString(), settings.value("tcpport").toString());
+
+
     if (dialogSpeed->exec() == QDialog::Accepted)
     {
         activeStart = true;
-        if (ui->comboBoxSpeedMode->currentText() == "Serial")
+        if (ui->comboBoxSpeedMode->currentText() == "Serial"){
+            settings.setValue("portname", dialogSpeed->GetPortname());
+            settings.setValue("baud", dialogSpeed->GetBaud());
+            settings.setValue("databits", dialogSpeed->GetDatabit());
+            settings.setValue("stopbits", dialogSpeed->GetStopBit());
+            settings.setValue("parity", dialogSpeed->GetParity());
             speedState(dialogSpeed->serialconnected());
-        else
+        }
+        else{
+            settings.setValue("tcpip", dialogSpeed->GetTcp());
+            settings.setValue("tcpport", dialogSpeed->GetPort());
             speedState(dialogSpeed->tcpconnected());
+            }
     }
 }
 
@@ -238,13 +268,30 @@ void FrameOSDSet::on_pushButtonWaterSpeedSetting_clicked()
 {
     DialogConfig *dialogWater = dialogSettingsList.value("waterSpeedSettings");
     dialogWater->show();
+
+
+    QSettings settings("app.ini", QSettings::IniFormat);
+    settings.beginGroup("Water");
+    dialogWater->setSerialSettings(settings.value("portname").toString(), settings.value("baud").toString(),
+                                   settings.value("stopbits").toString(), settings.value("databits").toString(), settings.value("parity").toString(),
+                                   settings.value("tcpip").toString(), settings.value("tcpport").toString());
+
     if (dialogWater->exec() == QDialog::Accepted)
     {
         activeStart = true;
-        if (ui->comboBoxWaterMode->currentText() == "Serial")
+        if (ui->comboBoxWaterMode->currentText() == "Serial"){
+            settings.setValue("portname", dialogWater->GetPortname());
+            settings.setValue("baud", dialogWater->GetBaud());
+            settings.setValue("databits", dialogWater->GetDatabit());
+            settings.setValue("stopbits", dialogWater->GetStopBit());
+            settings.setValue("parity", dialogWater->GetParity());
             waterState(dialogWater->serialconnected());
-        else
+        }
+        else{
+            settings.setValue("tcpip", dialogWater->GetTcp());
+            settings.setValue("tcpport", dialogWater->GetPort());
             waterState(dialogWater->tcpconnected());
+        }
     }
 }
 
@@ -252,13 +299,29 @@ void FrameOSDSet::on_pushButtonWindSetting_clicked()
 {
     DialogConfig *dialogWind = dialogSettingsList.value("windSettings");
     dialogWind->show();
+
+    QSettings settings("app.ini", QSettings::IniFormat);
+    settings.beginGroup("Wind");
+    dialogWind->setSerialSettings(settings.value("portname").toString(), settings.value("baud").toString(),
+                                  settings.value("stopbits").toString(), settings.value("databits").toString(), settings.value("parity").toString(),
+                                  settings.value("tcpip").toString(), settings.value("tcpport").toString());
+
     if (dialogWind->exec() == QDialog::Accepted)
     {
         activeStart = true;
-        if (ui->comboBoxWindMode->currentText() == "Serial")
+        if (ui->comboBoxWindMode->currentText() == "Serial"){
+            settings.setValue("portname", dialogWind->GetPortname());
+            settings.setValue("baud", dialogWind->GetBaud());
+            settings.setValue("databits", dialogWind->GetDatabit());
+            settings.setValue("stopbits", dialogWind->GetStopBit());
+            settings.setValue("parity", dialogWind->GetParity());
             windState(dialogWind->serialconnected());
-        else
+        }
+        else{
+            settings.setValue("tcpip", dialogWind->GetTcp());
+            settings.setValue("tcpport", dialogWind->GetPort());
             windState(dialogWind->tcpconnected());
+            }
     }
 }
 
@@ -266,13 +329,31 @@ void FrameOSDSet::on_pushButtonWeatherSetting_clicked()
 {
     DialogConfig *dialogWeather = dialogSettingsList.value("weatherSettings");
     dialogWeather->show();
+
+    QSettings settings("app.ini", QSettings::IniFormat);
+    settings.beginGroup("Weather");
+    dialogWeather->setSerialSettings(settings.value("portname").toString(), settings.value("baud").toString(),
+                                     settings.value("stopbits").toString(), settings.value("databits").toString(), settings.value("parity").toString(),
+                                     settings.value("tcpip").toString(), settings.value("tcpport").toString());
+
     if (dialogWeather->exec() == QDialog::Accepted)
     {
+
         activeStart = true;
-        if (ui->comboBoxWeatherMode->currentText() == "Serial")
+        if (ui->comboBoxWeatherMode->currentText() == "Serial"){
+
+            settings.setValue("portname", dialogWeather->GetPortname());
+            settings.setValue("baud", dialogWeather->GetBaud());
+            settings.setValue("databits", dialogWeather->GetDatabit());
+            settings.setValue("stopbits", dialogWeather->GetStopBit());
+            settings.setValue("parity", dialogWeather->GetParity());
             weatherState(dialogWeather->serialconnected());
-        else
+        }
+        else{
+            settings.setValue("tcpip", dialogWeather->GetTcp());
+            settings.setValue("tcpport", dialogWeather->GetPort());
             weatherState(dialogWeather->tcpconnected());
+        }
     }
 }
 

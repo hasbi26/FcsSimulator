@@ -34,6 +34,9 @@ public:
     QString GetParity(){return paRity;}
     QString GetStopBit(){return stopBit;}
 
+    QString GetTcp(){return IP;}
+    QString GetPort(){return Port;}
+
     bool serialconnected(){return isconnected;}
     bool tcpconnected(){return  isconnectedTcp;}
     ~DialogConfig();
@@ -49,6 +52,9 @@ private:
     QString stopBit;
     bool isconnected;
     bool isconnectedTcp;
+
+    QString IP;
+    QString Port;
 
     QSerialPort serial;
 
@@ -75,6 +81,8 @@ public slots:
     void disconnected();
     void bytesWritten(qint64 bytes);
     void readyRead();
+
+    void setSerialSettings(QString dataPortname, QString dataBaud, QString dataStopBits, QString dataBits, QString dataParity, QString dataTcpIp, QString dataTcpPort );
 
 private slots:
     void on_buttonBoxSaveConfig_accepted();

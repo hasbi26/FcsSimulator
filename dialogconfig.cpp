@@ -11,12 +11,7 @@ DialogConfig::DialogConfig(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogConfig)
 {
-
-
     ui->setupUi(this);
-
-
-
 ;
 
     foreach (QextPortInfo info, QextSerialEnumerator::getPorts())
@@ -87,10 +82,10 @@ void DialogConfig::on_buttonBoxSaveTCPConfig_accepted()
     socket = NULL;
     qDebug() << "connecting...";
 
-    QString IP = ui->TcpEdit->text();
-    QString port = ui->PortEdit->text();
+    IP = ui->TcpEdit->text();
+    Port = ui->PortEdit->text();
     server = new (QTcpServer);
-    if(server->listen(QHostAddress(IP),port.toInt()))
+    if(server->listen(QHostAddress(IP),Port.toInt()))
     {
         isconnectedTcp = true;
         qDebug()<<QDateTime::currentDateTime().toString()<<" tcp server is listening. IP "<<server->serverAddress().toString()<<" port "<<server->serverPort();
@@ -173,6 +168,16 @@ void DialogConfig::disconnected()
 {
     qDebug() << "disconnected...";
     serial.close();
+}
+
+void DialogConfig::setSerialSettings(QString dataPortname, QString dataBaud,  QString dataStopBits, QString dataBits, QString dataParity, QString dataTcpIp, QString dataTcpPort ){
+    ui->portNameCombo->setCurrentText(dataPortname);
+    ui->baudRateCombo->setCurrentText(dataBaud);
+    ui->stopBitsCombo->setCurrentText(dataStopBits);
+    ui->dataBitsCombo->setCurrentText(dataBits);
+    ui->parityCombo->setCurrentText(dataParity);
+    ui->TcpEdit->setText(dataTcpIp);
+    ui->PortEdit->setText(dataTcpPort);
 }
 
 void DialogConfig::bytesWritten(qint64 bytes)
