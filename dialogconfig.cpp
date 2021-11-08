@@ -137,6 +137,7 @@ void DialogConfig::on_buttonBoxSaveConfig_accepted()
 void DialogConfig::SerialWrite(QString data)
 {
         serial.write(data.toLatin1());
+        serial.waitForBytesWritten(10);
 }
 
 //=== Tcp ===//

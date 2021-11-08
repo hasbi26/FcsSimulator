@@ -26,6 +26,8 @@ public:
 
     ~FrameOSDSet();
 
+int interval = 500;
+
 public slots:
     void on_GyroTimer();
     void on_GpsTimer();

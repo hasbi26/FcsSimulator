@@ -10,6 +10,7 @@
 #include "QSettings"
 #include <QFile>
 #include "QDir"
+#include "time.h"
 
 
 using namespace std;
@@ -801,7 +802,7 @@ void FrameOSDSet::on_pushButtonWeatherApply_clicked()
     float pressure_float =pressure. toFloat(&ok);
     if(!ok)
     {
-        QMessageBox::critical(this, "Fatal Error Weather Pressure", "Invalid input value\nValid input range : 100 - 1000" );
+        QMessageBox::critical(this, "Fatal Error Pressure", "Invalid input value\nValid input range : 100 - 1000" );
         return;
     }
     if ((pressure_float < 0.1) || (pressure_float > 100) )
@@ -833,7 +834,8 @@ void FrameOSDSet::on_pushButtonGyroStart_clicked()
     ui->pushButtonGyroApply->setEnabled(true);
     ui->pushButtonGyroSetting->setEnabled(false);
     SendtimerGyro = new QTimer( this );
-    int sendInterval = 500; // milliseconds
+    //int sendInterval = 5; // milliseconds
+    int sendInterval = interval; // milliseconds
     SendtimerGyro->setInterval( sendInterval );
     connect(SendtimerGyro, SIGNAL(timeout()),this, SLOT(on_GyroTimer()));
     SendtimerGyro->start(sendInterval);
@@ -847,7 +849,7 @@ void FrameOSDSet::on_pushButtonGPSStart_clicked()
     ui->pushButtonGPSApply->setEnabled(true);
     ui->pushButtonGPSSetting->setEnabled(false);
     SendtimerGps = new QTimer( this );
-    int sendInterval = 500; // milliseconds
+    int sendInterval = interval; // milliseconds
     SendtimerGps->setInterval( sendInterval );
     connect(SendtimerGps, SIGNAL(timeout()),this, SLOT(on_GpsTimer()));
     SendtimerGps->start(sendInterval);
@@ -861,7 +863,7 @@ void FrameOSDSet::on_pushButtonSpeedStart_clicked()
     ui->pushButtonSpeedApply->setEnabled(true);
     ui->pushButtonSpeedSetting->setEnabled(false);
     SendtimerSpeed = new QTimer( this );
-    int sendInterval = 500; // milliseconds
+    int sendInterval = interval; // milliseconds
     SendtimerSpeed->setInterval( sendInterval );
     connect(SendtimerSpeed, SIGNAL(timeout()),this, SLOT(on_SpeedTimer()));
     SendtimerSpeed->start(sendInterval);
@@ -875,7 +877,7 @@ void FrameOSDSet::on_pushButtonWaterStart_clicked()
     ui->pushButtonWaterApply->setEnabled(true);
     ui->pushButtonWaterSpeedSetting->setEnabled(false);
     SendtimerWater = new QTimer( this );
-    int sendInterval = 500; // milliseconds
+    int sendInterval = interval; // milliseconds
     SendtimerWater->setInterval( sendInterval );
     connect(SendtimerWater, SIGNAL(timeout()),this, SLOT(on_WaterTimer()));
     SendtimerWater->start(sendInterval);
@@ -889,7 +891,7 @@ void FrameOSDSet::on_pushButtonWindStart_clicked()
     ui->pushButtonWindApply->setEnabled(true);
     ui->pushButtonWindSetting->setEnabled(false);
     SendtimerWind = new QTimer( this );
-    int sendInterval = 500; // milliseconds
+    int sendInterval = interval; // milliseconds
     SendtimerWind->setInterval( sendInterval );
     connect(SendtimerWind, SIGNAL(timeout()),this, SLOT(on_WindTimer()));
     SendtimerWind->start(sendInterval);
@@ -903,7 +905,7 @@ void FrameOSDSet::on_pushButtonWeatherStart_clicked()
     ui->pushButtonWeatherApply->setEnabled(true);
     ui->pushButtonWeatherSetting->setEnabled(false);
     SendtimerWeather = new QTimer( this );
-    int sendInterval = 500; // milliseconds
+    int sendInterval = interval; // milliseconds
     SendtimerWeather->setInterval( sendInterval );
     connect(SendtimerWeather, SIGNAL(timeout()),this, SLOT(on_WeatherTimer()));
     SendtimerWeather->start(sendInterval);
@@ -1079,6 +1081,14 @@ void FrameOSDSet::on_WindTimer()
         qDebug()<<"Dataserial Wind Kirim =" << Datatosend;
         ui->textEdit->insertPlainText(Datatosend);
         dialogWind->SerialWrite(Datatosend);
+
+//        for ( const auto& i : Datatosend.split(QRegExp("\r\n"),QString::SkipEmptyParts) )
+//        {
+//            qDebug() << i+"\r\n";
+//            ui->textEdit->insertPlainText(i+"\r\n");
+//            dialogWind->SerialWrite(i+"\r\n");
+//            usleep(500000);
+//        }
     }
     else
     {
